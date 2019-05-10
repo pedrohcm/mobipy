@@ -1,4 +1,3 @@
-import point
 import math
 import geopy.distance as gp
 
@@ -48,8 +47,8 @@ def calculateRadiusOfGyration(points, point=None):
     sum = math.sqrt(sum / len(points))
     return sum
 
-print calculateDistance(41.49008, -71.312796, 41.499498, -81.695391)
-points = [(41.49008, -71.312796), (41.499498, -81.695391)]
-print calculateMidPoint(points)
-print calculateRadiusOfGyration(points)
+#print calculateDistance(41.49008, -71.312796, 41.499498, -81.695391)
+#points = [(41.49008, -71.312796), (41.499498, -81.695391)]
+#print calculateMidPoint(points)
+#print calculateRadiusOfGyration(points)
     
