@@ -1,5 +1,5 @@
 import math
-from helpers import utils
+from ..helpers import utils
 
 def calculateMidPoint(points):
     x = 0

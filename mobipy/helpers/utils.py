@@ -1,3 +1,6 @@
+import geopy as gp
+import pandas as pd
+
 def calculateDistance(lat1, lon1, lat2, lon2):
     coords1 = (lat1, lon1)
     coords2 = (lat2, lon2)
