@@ -1,4 +1,4 @@
-class DataIdentifier:
+class Identifier:
     
   def __init__(self, lat_name, lon_name, timestamp, start_time, end_time, item_id):
     self.lat_name = lat_name

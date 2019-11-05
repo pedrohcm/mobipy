@@ -1,5 +1,5 @@
 import math
-import helpers
+from helpers import utils
 
 def calculateMidPoint(points):
     x = 0
@@ -36,7 +36,7 @@ def calculateRadiusOfGyration(points, midPoint=None):
     if midPoint is None:
         midPoint = calculateMidPoint(points)
     for i in range(len(points)):
-        base = helpers.calculateDistance(points[i][0], points[i][1], midPoint[0], midPoint[1])
+        base = utils.calculateDistance(points[i][0], points[i][1], midPoint[0], midPoint[1])
         sum += math.pow(base, 2)
     sum = math.sqrt(sum / len(points))
     return sum
