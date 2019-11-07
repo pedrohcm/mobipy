@@ -1,7 +1,9 @@
 import math
 from ..helpers import utils
+from ..helpers import dataset_selector
+from ..classes.selector import Selector
 
-def radius_of_gyration(dataframe, dataIdentifier,  midPoint=None):
+def radius_of_gyration(dataframe, dataIdentifier, midPoint=None):
     sum = 0
     if midPoint is None:
         midPoint = utils.calculateMidPoint(dataframe, dataIdentifier)
@@ -35,7 +37,7 @@ def group_by_closeness(dataframe_a, dataframe_b, dataIdentifier, b_distance_tole
         a_id = getattr(row, dataIdentifier.item_id)
         sliced_group_b = utils.slice_geographic_data(dataframe_b, dataIdentifier, center_lat, 
                                                center_lon, search_tolerance)
-        for b_item in utils.get_closest_items(center_lat, center_lon, sliced_group_b, b_distance_tolerance):
+        for b_item in utils.get_closest_items(sliced_group_b, dataIdentifier, center_lat, center_lon, b_distance_tolerance):
                 time_spent_in_minutes = utils.get_time_spent_in_minutes(getattr(row, dataIdentifier.start_time), 
                                                                   getattr(row, dataIdentifier.end_time))
                 if b_item in result_group:
@@ -46,3 +48,14 @@ def group_by_closeness(dataframe_a, dataframe_b, dataIdentifier, b_distance_tole
         for b_item in result_group:
                 result_group[b_item][1] = utils.get_blox_plot_info(result_group[b_item][1])
         return result_group
+
+def home_detection(dataframe, dataIdentifier):
+    selector = Selector("", "", "0111110", "111111000000000000001111")
+    filtered_df = dataset_selector.select_df(dataframe, selector, dataIdentifier)
+    filtered_clusters = utils.cluster_points(utils.get_np_coords_from_df(filtered_df, dataIdentifier))
+    for cluster in filtered_clusters:
+        print(cluster) ##check if it has something to indicate its length
+        ##use its length to ordenate
+        ##get the most intense cluster
+    return top_cluster
+

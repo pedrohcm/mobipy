@@ -2,7 +2,10 @@ import geopy as gp
 import pandas as pd
 import numpy as np
 import math
+import operator
 from sklearn.cluster import DBSCAN
+from shapely.geometry import MultiPoint
+
 
 
 def calculateDistance(lat1, lon1, lat2, lon2):
@@ -55,19 +58,26 @@ def cluster_points(points, max_radius, min_samples):
     epsilon = max_radius / kms_per_radian
     db = DBSCAN(eps=epsilon, min_samples=min_samples, algorithm='ball_tree', metric='haversine').fit(np.radians(points))
     cluster_labels = db.labels_
+    print(cluster_labels)
     num_clusters = len(set(cluster_labels))
-    clusters = pd.Series([coords[cluster_labels == n] for n in range(num_clusters)])
+    clusters = pd.Series([points[cluster_labels == n] for n in range(num_clusters)])
     print('Number of clusters: {}'.format(num_clusters))
+    print(clusters)
     return clusters
 
 def get_np_coords_from_df(dataframe, data_identifier):
     coords = dataframe.as_matrix(columns=[data_identifier.lat_name, data_identifier.lon_name])
     return coords
 
+def get_centermost_point(cluster):
+    centroid = (MultiPoint(cluster).centroid.x, MultiPoint(cluster).centroid.y)
+    centermost_point = min(cluster, key=lambda point: gp.distance.great_circle(point, centroid).m)
+    return tuple(centermost_point)
+
 def slice_geographic_data(dataframe, dataIdentifier, center_lat, center_lon, tolerance):
     min_lats,max_lats,min_lons,max_lons = get_search_boundaries(center_lat, center_lon, tolerance)
-    return data[(data[dataIdentifier.lat_name] >= min_lats) & (data[dataIdentifier.lat_name] <= max_lats) &
-                (data[dataIdentifier.lon_name] >= min_lons) & (data[dataIdentifier.lon_name] <= max_lons)]
+    return dataframe[(dataframe[dataIdentifier.lat_name] >= min_lats) & (dataframe[dataIdentifier.lat_name] <= max_lats) &
+                (dataframe[dataIdentifier.lon_name] >= min_lons) & (dataframe[dataIdentifier.lon_name] <= max_lons)]
 
 def get_search_boundaries(center_lat, center_lon, 
                           tolerance, threshold=1):
@@ -79,7 +89,7 @@ def get_search_boundaries(center_lat, center_lon,
                                                                         upper_limit, 
                                                                         lower_limit,
                                                                         True)
-    distance = calculateDistance(min_lats, min_lons, center_lat, center_lon)
+    #distance = calculateDistance(min_lats, min_lons, center_lat, center_lon)
     return round(min_lats, 6),round(max_lats, 6),round(min_lons, 6),round(max_lons, 6)
     
 def get_lat_long_with_tolerance(center_lat, center_lon, 
@@ -125,7 +135,7 @@ def get_closest_items(dataframe, dataIdentifier, center_lat, center_lon,
                          getattr(row, dataIdentifier.latitude), getattr(row, dataIdentifier.longitude))
         ordered_distances = sorted(distances.items(), key=operator.itemgetter(1))
         closest_distance = ordered_distances[0][1]
-        for item,distance in distances.items():
+        for item, distance in distances.items():
             if(distance <= closest_distance + distance_tolerance):
                 items_ids.append(item)    
     return items_ids
