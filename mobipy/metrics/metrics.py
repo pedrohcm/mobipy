@@ -4,6 +4,21 @@ from ..helpers import dataset_selector
 from ..classes.selector import Selector
 
 def radius_of_gyration(dataframe, dataIdentifier, midPoint=None):
+    """Measures how far a user moves from the mid point, in meters.
+
+    If the argument `midPoint` isn't passed in, it will be calculated
+    with the data from `dataframe`.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        the dataframe with the data
+    dataframe : DataIdentifier
+        the identifier of the dataframe to be used
+    midPoint : tuple, optional
+        the mid point of the displacements, tuple (lat, lon)
+    """
+    
     sum = 0
     if midPoint is None:
         midPoint = utils.calculateMidPoint(dataframe, dataIdentifier)
