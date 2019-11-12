@@ -13,7 +13,7 @@ def radius_of_gyration(dataframe, dataIdentifier, midPoint=None):
     ----------
     dataframe : pandas.DataFrame
         the dataframe with the data
-    dataframe : DataIdentifier
+    dataIdentifier : DataIdentifier
         the identifier of the dataframe to be used
     midPoint : tuple, optional
         the mid point of the displacements, tuple (lat, lon)

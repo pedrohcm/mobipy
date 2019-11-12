@@ -9,6 +9,22 @@ from shapely.geometry import MultiPoint
 
 
 def calculateDistance(lat1, lon1, lat2, lon2):
+    """Calculates the distance, in meters, between point1 (`lat1`, `lon1`)
+    and point2 (`lat2`, `lon2`).
+
+    Uses WGS84 ellipsoid from geopy.distance function.
+
+    Parameters
+    ----------
+    lat1 : float
+        point1 latitude
+    lon1 : float
+        point1 longitude
+    lat2 : float
+        point2 latitude
+    lon2 : float
+        point2 longitude
+    """
     coords1 = (lat1, lon1)
     coords2 = (lat2, lon2)
     distance = gp(coords1, coords2).m
@@ -16,28 +32,45 @@ def calculateDistance(lat1, lon1, lat2, lon2):
 
 
 def calculateMidPoint(dataframe, dataIdentifier):
+    """Calculates mid point by finding the center of
+    gravity for the coordinates in the `dataframe`.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        the dataframe with the data
+    dataIdentifier : DataIdentifier
+        the identifier of the dataframe to be used
+    """
+
     x = 0
     y = 0
     z = 0
 
     for row in dataframe.itertuples():
+
+        #convert from degrees to radians
         latitude = getattr(row, dataIdentifier.latitude) * (math.pi / 180)
         longitude = getattr(row, dataIdentifier.longitude) * (math.pi / 180)
 
+        #convert to cartesian coordinates
         x += math.cos(latitude) * math.cos(longitude)
         y += math.cos(latitude) * math.sin(longitude)
         z += math.sin(latitude)
 
     total = len(dataframe)
 
+    #get average x,y,z
     x = x / total
     y = y / total
     z = z / total
 
+    #convert to latitude and longitude
     centralLongitude = math.atan2(y, x)
     centralSquareRoot = math.sqrt(x * x + y * y)
     centralLatitude = math.atan2(z, centralSquareRoot)
 
+    #convert back to degrees
     midPointLat = centralLatitude * (180 / math.pi)
     midPointLon = centralLongitude * (180 / math.pi)
 
@@ -54,6 +87,19 @@ def get_blox_plot_info(data):
     return quantiles
 
 def cluster_points(points, max_radius, min_samples):
+    """Uses DBSCAN algorithm to cluster all the `points`.
+
+    Parameters
+    ----------
+    points : np.Series
+        the points to be used in DBSCAN
+    max_radius : float
+        the max distance, in km, that points can be from 
+        each other to be considered a cluster
+    min_samples : float
+        the minimum cluster size
+    
+    """
     kms_per_radian = 6371.0088
     epsilon = max_radius / kms_per_radian
     db = DBSCAN(eps=epsilon, min_samples=min_samples, algorithm='ball_tree', metric='haversine').fit(np.radians(points))
