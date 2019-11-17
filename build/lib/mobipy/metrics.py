@@ -1,8 +1,9 @@
 import math
-from ..helpers import utils
-from ..helpers import dataset_selector
-from ..classes.selector import Selector
+from . import utils
+from .dataset_selector import dataset_selector, select_df
+from .selector import Selector
 
+@dataset_selector
 def radius_of_gyration(dataframe, dataIdentifier, midPoint=None):
     """Measures how far a user moves from the mid point, in meters.
 
@@ -18,17 +19,18 @@ def radius_of_gyration(dataframe, dataIdentifier, midPoint=None):
     midPoint : tuple, optional
         the mid point of the displacements, tuple (lat, lon)
     """
-    
     sum = 0
     if midPoint is None:
-        midPoint = utils.calculateMidPoint(dataframe, dataIdentifier)
+        midPoint = utils.calculate_mid_point(dataframe, dataIdentifier)
+        print(midPoint)
     for row in dataframe.itertuples():
-        base = utils.calculateDistance(getattr(row, dataIdentifier.latitude), 
+        base = utils.calculate_distance(getattr(row, dataIdentifier.latitude), 
             getattr(row, dataIdentifier.longitude), midPoint[0], midPoint[1])
         sum += math.pow(base, 2)
     sum = math.sqrt(sum / len(dataframe))
     return sum
 
+@dataset_selector
 def user_displacement_distance(dataframe, dataIdentifier):
     sum_user_distances = 0
     latitude_a = longitude_a = latitude_b = longitude_b = 0
@@ -40,10 +42,11 @@ def user_displacement_distance(dataframe, dataIdentifier):
             if latitude_b == 0:
                 latitude_b = getattr(row, dataIdentifier.latitude)
                 longitude_b = getattr(row, dataIdentifier.longitude)    
-            sum_user_distances += utils.calculateDistance(latitude_a, longitude_a, latitude_b, longitude_b)
+            sum_user_distances += utils.calculate_distance(latitude_a, longitude_a, latitude_b, longitude_b)
             latitude_a = longitude_a = latitude_b = longitude_b = 0
     return sum_user_distances
 
+@dataset_selector
 def group_by_closeness(dataframe_a, dataframe_b, dataIdentifier, b_distance_tolerance=1, search_tolerance=50):
     result_group = {}
     for row in dataframe_a.itertuples():
@@ -64,13 +67,36 @@ def group_by_closeness(dataframe_a, dataframe_b, dataIdentifier, b_distance_tole
                 result_group[b_item][1] = utils.get_blox_plot_info(result_group[b_item][1])
         return result_group
 
+@dataset_selector
+def activity_centers(dataframe, dataIdentifier):
+    """Calculates the activity centers by applying the DBSCAn algorithm to the dataframe.
+
+    Returns a list of activity centers, each with [lat, lon] points.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        the dataframe with the data
+    dataIdentifier : DataIdentifier
+        the identifier of the dataframe to be used
+    """
+    max_radius = 5
+    min_cluster_size = 1
+    clusters = utils.cluster_points(utils.get_np_coords_from_df(dataframe, dataIdentifier), 
+                                    max_radius,
+                                    min_cluster_size)
+    return clusters
+
+@dataset_selector
 def home_detection(dataframe, dataIdentifier):
-    selector = Selector("", "", "0111110", "111111000000000000001111")
-    filtered_df = dataset_selector.select_df(dataframe, selector, dataIdentifier)
-    filtered_clusters = utils.cluster_points(utils.get_np_coords_from_df(filtered_df, dataIdentifier))
-    for cluster in filtered_clusters:
-        print(cluster) ##check if it has something to indicate its length
-        ##use its length to ordenate
-        ##get the most intense cluster
-    return top_cluster
+    max_radius = 1
+    min_cluster_size = 1
+    selector = Selector(None, None, "0111110", "111111000000000000001111")
+    filtered_df = select_df(dataframe, selector, dataIdentifier)
+    print("depois", len(filtered_df))
+    filtered_clusters = utils.cluster_points(utils.get_np_coords_from_df(filtered_df, dataIdentifier), 
+                                             max_radius,
+                                             min_cluster_size)
+    print('total de clusters', len(filtered_clusters))
+    return filtered_clusters, max(filtered_clusters, key = lambda i: len(i)) 
 

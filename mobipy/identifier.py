@@ -37,8 +37,8 @@ class Identifier:
         the item or user/group id column name, used in some mobipy functions
     """
 
-    self.lat_name = lat_name
-    self.lon_name = lon_name
+    self.latitude = lat_name
+    self.longitude = lon_name
     self.timestamp = timestamp
     self.start_time = start_time
     self.end_time = end_time

@@ -24,7 +24,7 @@ class Selector:
 
   """
     
-  def __init__(self, start_date, end_date, week_days, day_hours):
+  def __init__(self, start_date=None, end_date=None, week_days=None, day_hours=None):
     """
     Parameters
     ----------
