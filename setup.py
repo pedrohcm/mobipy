@@ -1,58 +1,22 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import setuptools
 
-import io
-import os
-import sys
-from shutil import rmtree
-from setuptools import find_packages, setup, Command
-
-NAME = 'geolib_tcc'
-DESCRIPTION = 'Trabalho de Conclusão de Curso - Ciência da Computação - UFCG.'
-URL = 'https://github.com/pedrohcm/tcc'
-EMAIL = 'me@example.com'
-AUTHOR = 'Pedro Maia'
-REQUIRES_PYTHON = '>=2.7'
-VERSION = '0.0.1'
-
-REQUIRED = [
-	'geopy'
-]
-
-EXTRAS = {
-    #...
-}
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-try:
-    with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-        long_description = '\n' + f.read()
-except FileNotFoundError:
-    long_description = DESCRIPTION
-
-about = {}
-if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-    with open(os.path.join(here, project_slug, '__version__.py')) as f:
-        exec(f.read(), about)
-else:
-    about['__version__'] = VERSION
-
-# Where the magic happens:
-setup(
-    name=NAME,
-    version=about['__version__'],
-    description=DESCRIPTION,
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+setuptools.setup(
+    name='mobipy',
+    version="1.0.0",
+    author='Pedro Maia',
+    author_email='pedro.maia@ccc.ufcg.edu.br',
+    description='A library for analyzing user mobility patterns',
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    author=AUTHOR,
-    author_email=EMAIL,
-    python_requires=REQUIRES_PYTHON,
-    url=URL,
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    install_requires=REQUIRED,
-    extras_require=EXTRAS,
-    include_package_data=True,
-    license='MIT',
+    long_description_content_type="text/markdown",
+    url='http://github.com/pedrohcm/mobipy',
+	packages=['mobipy'],
+    install_requires=['geopy', 'pandas', 'numpy', 'sklearn', 'shapely'],
+    classifiers=[
+        "Programming Language :: Python :: 3.6",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.6',
 )
