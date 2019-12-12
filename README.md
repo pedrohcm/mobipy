@@ -14,11 +14,11 @@ Or, [download a wheel or source archive from PyPI](https://pypi.org/project/Mobi
 
 ### Available metrics
 
-- Radius of gyration;
-- Home detection;
-- User displacement distance;
-- Group by closeness;
-- Activity centers;
+- Radius of gyration - Measures how far a user moves from the mid point, in meters;
+- Home detection - Estimates the user home location;
+- User displacement distance - Calculates total user displacement distance from `dataframe`.;
+- Group by closeness - Groups items in `dataframe_a` with the nearest items in `dataframe_b`;
+- Activity centers - Calculates the activity centers by applying the DBSCAN algorithm to the dataframe.;
 
 ### Using mobipy metrics
 
